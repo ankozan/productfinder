@@ -8,68 +8,30 @@ from email.mime.multipart import MIMEMultipart
 
 # Define a list of URLs to monitor
 urls_to_monitor = [
-    'https://www.rei.com/product/216625/cannondale-caad13-disc-105-bike',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/van-rysel-edr-af105-road-bike-305449?',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/triban-triban-grvl-520-subcompact-gravel-bike-326904',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/gravel-bike-bicycle?',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/van-rysel-edr-cf-shimano-105-carbon-road-bike-with-disc-brakes-324411?',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/triban-grvl900-shimano-grx-titanium-frame-gravel-bike-325632?',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/triban-rc-500-disc-road-bike-306241?',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/triban-rc100-adult-road-bike-700c-silver-xl-u307028?',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/rc-120-disc-326838?',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/road-bike-disc-105-rc-520?',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/triban-women-easy-bike?',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/woman-regular-triban-311819?',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/triban-rc-500-road-bike-311749?',
-    'https://www.decathlon.com/collections/road-gravel-bikes/products/triban-rc520-disc-brake-road-bike-womens-8629968-967269?',
-    'https://www.rei.com/product/216625/cannondale-caad13-disc-105-bike',
-    'https://www.rei.com//product/184749/salsa-journeyer-claris-700-bike',
-    'https://www.rei.com//product/184748/salsa-journeyer-claris-650b-bike',
-    'https://www.rei.com//product/208192/cannondale-topstone-3-bike',
-    'https://www.rei.com//product/159859/co-op-cycles-adv-22-bike',
-    'https://www.rei.com//product/184747/salsa-journeyer-apex-1-700c-bike',
-    'https://www.rei.com//product/182628/cannondale-topstone-carbon-5-bike',
-    'https://www.rei.com//product/228434/diamondback-haanjo-2-bike',
-    'https://www.rei.com//product/190608/co-op-cycles-adv-23-bike',
-    'https://www.rei.com//product/208190/cannondale-topstone-1-bike',
-    'https://www.rei.com//product/184751/salsa-journeyer-sora-650b-bike',
-    'https://www.rei.com//product/220761/co-op-cycles-adv-11-bike',
-    'https://www.rei.com//product/205432/salsa-journeyer-advent-650b-bike',
-    'https://www.rei.com//product/205433/salsa-journeyer-advent-700c-bike',
-    'https://www.rei.com//product/182630/cannondale-topstone-neo-5-electric-bike',
-    'https://www.rei.com//product/190168/cannondale-synapse-carbon-3-l-bike-2021',
-    'https://www.rei.com//product/199794/salsa-cutthroat-grx-600-bike',
-    'https://www.rei.com//product/186752/cannondale-topstone-neo-sl-2-electric-bike',
-    'https://www.rei.com//product/208240/salsa-journeyer-grx-600-650b-bike',
-    'https://www.rei.com//product/184509/cannondale-tesoro-neo-x-2-remixte-electric-bike',
-    'https://www.rei.com//product/208193/cannondale-topstone-4-bike',
-    'https://www.rei.com//product/208185/cannondale-topstone-carbon-4-bike',
-    'https://www.rei.com//product/184508/cannondale-tesoro-neo-x-3-electric-bike',
-    'https://www.rei.com//product/208189/cannondale-synapse-al-3-bike',
-    'https://www.rei.com//product/199796/salsa-warbird-grx-610-1x-bike',
-    'https://www.rei.com//product/180598/co-op-cycles-adv-31-bike',
-    'https://www.rei.com//product/228435/diamondback-haanjo-3-bike',
-    'https://www.rei.com//product/159858/co-op-cycles-adv-21-bike',
-    'https://www.rei.com//product/184752/salsa-journeyer-sora-700c-bike',
-    'https://www.rei.com//product/199798/salsa-warroad-c-105-bike',
-    'https://www.walmart.com/ip/Decathlon-Triban-RC100-Adult-Road-Bike-700c-Silver-S/163847876?from=/search'
+    'https://a.co/d/i5jregO',
+    'https://a.co/d/4dp5sYD',
+    'https://a.co/d/825Czfk',
+    'https://a.co/d/825Czfk',
+    'https://a.co/d/2S958F0',
+    'https://a.co/d/92G6tGA'
 ]
 # Function to scrape the price from the webpage
 
 
 def get_item_price():
-    headers = {
-        "User-Agent": "Your-User-Agent-String",
-        "Referer": "https://example.com"
-    }
-    session = requests.Session()
-    response = session.get(url, headers=headers)
+    l = []
+    o = {}
+
+    headers = {"accept-language": "en-US,en;q=0.9", "accept-encoding": "gzip, deflate, br",
+               "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36", "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"}
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.text, 'html.parser')
 
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         # Use appropriate HTML tags and attributes to locate the item's price
         price_element = soup.find(
-            'span', {'id': 'buy-box-product-price'})
+            "span", {"class": "a-price"}).find("span")
         if price_element:
             return price_element.text.strip()
         else:
@@ -155,6 +117,7 @@ if __name__ == "__main__":
     print(today)
     for url in urls_to_monitor:
         price = get_item_price()
+
         if price:
             # Check if the price has changed
             data_by_url = read_csv_data()

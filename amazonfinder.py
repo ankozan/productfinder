@@ -3,18 +3,25 @@ from bs4 import BeautifulSoup
 import openpyxl
 from openpyxl import load_workbook
 from lxml import etree
+from lxml import html
+import re
 
 
-def scrape_ups_and_write_to_excel():
-    # Code to go to outlet website and scrape UPS
-    rei_url = 'https://www.rei.com/search.html?sort=percentageoff&ir=deals%3AOutlet+Products&r=deals%3AOutlet+Products%3Bbrand%3Apatagonia%7Cmarmot%7Carcteryx%7Ccamelbak%7Ccolumbia%7Cgerber%7Chydro-flask%7Choka%7Cmammut%7Cmerrell%7Cnew-balance%7Cprana%7Csalomon%7Cthe-north-face%7Cunder-armour'
+def goto_website(url):
     HEADERS = {
         "User-Agent": "Your-User-Agent-String",
         "Referer": "https://example.com"
     }
-    webpage = requests.get(rei_url, headers=HEADERS)
+    webpage = requests.get(url, headers=HEADERS)
     soup = BeautifulSoup(webpage.content, "html.parser")
     dom = etree.HTML(str(soup))
+    return dom
+
+
+def scrape_ups_and_write_to_excel():
+    # Code to go to outlet website and scrape UPS
+    dom = goto_website('https://www.rei.com/search.html?sort=percentageoff&ir=deals%3AOutlet+Products&r=deals%3AOutlet+Products%3Bbrand%3Apatagonia%7Cmarmot%7Carcteryx%7Ccamelbak%7Ccolumbia%7Cgerber%7Chydro-flask%7Choka%7Cmammut%7Cmerrell%7Cnew-balance%7Cprana%7Csalomon%7Cthe-north-face%7Cunder-armour'
+                       )
     ups_data_list = dom.xpath('//*[contains(@href,"product")]')
     if ups_data_list:
         write_to_excel(ups_data_list, "Links")
@@ -32,7 +39,7 @@ def iterate_excel_and_mark_items():
         return
 
     # Iterate through the sheet
-    sheet_name = 'Sheet1'
+    sheet_name = 'Sheet'
     if sheet_name not in workbook.sheetnames:
         print(f"Sheet '{sheet_name}' not found in the Excel file. Exiting.")
         return
@@ -85,10 +92,8 @@ def clear_excel_sheet(excel_file_path, sheet_name):
     try:
         workbook = load_workbook(excel_file_path)
         sheet = workbook[sheet_name]
-
         # Delete all rows except the first one (header row)
-        sheet.delete_rows(2, sheet.max_row)
-
+        sheet.delete_rows(1, sheet.max_row)
         # Save the changes
         workbook.save(excel_file_path)
         print(f"Sheet '{sheet_name}' cleared successfully.")
@@ -98,10 +103,6 @@ def clear_excel_sheet(excel_file_path, sheet_name):
 
 def write_to_excel(upcList, column_name):
     clear_excel_sheet('/Users/alikozan/Desktop/excel_table.xlsx', 'Sheet')
-
-    # Load or create Excel workbook
-    # Update with the actual path
-
     excel_file_path = '/Users/alikozan/Desktop/excel_table.xlsx'
     try:
         workbook = load_workbook(excel_file_path)
@@ -140,7 +141,35 @@ def mark_item_on_excel(sheet, upc, marked_column):
         sheet[f'{marked_column}{row_number}'] = 'X'
 
 
+def find_upcs(excel_file_path, sheet_name):
+    upc_values = []
+    try:
+        workbook = load_workbook(excel_file_path)
+        sheet = workbook[sheet_name]
+
+        # Assuming the URLs are in the second column (column 'B')
+        url_column = 1
+
+        for row in sheet.iter_rows(min_row=3, max_col=2, values_only=True):
+            url = row[url_column - 1]  # Adjust index to 0-based
+
+            # Make an HTTP request to the URL
+            dom = goto_website(url)
+            upc = dom.xpath('//script[contains(text(),"upc")]')
+            match = re.search(r'"upc":"([^"]+)"', upc[0].text)
+            if match:
+                upc_value = match.group(1)
+                upc_values.append(upc_value)
+            else:
+                print("No UPC value found in the input string.")
+
+    except FileNotFoundError:
+        print(f"Excel file '{excel_file_path}' not found.")
+
+
 # Execute the functions
 
-scrape_ups_and_write_to_excel()
+# scrape_ups_and_write_to_excel()
+find_upcs('/Users/alikozan/Desktop/excel_table.xlsx', 'Sheet')
+
 # iterate_excel_and_mark_items()
